@@ -5,24 +5,39 @@ public class CPUCore {
     private int scheduler;
     private boolean isFree = true;
 
+    public void setProcess(Process currentProcess, int scheduler) {
+        if (this.isFree) {
+            this.currentProcess = currentProcess;
+            this.scheduler = scheduler;
+            this.isFree = false;
+        }
+    }
+
     public boolean isFree() {
         return isFree;
     }
 
-    void runInstruction(){
-        if(currentProcess != null){
+    void runInstruction() {
+        if (currentProcess != null && !this.isFree) {
             int currentInstruction = currentProcess.instructions[currentProcess.currentInstructionCounter];
-            if(currentInstruction <= 0){
+            if (currentInstruction <= 0) {
+                System.out.println("Rodando processo: " + currentProcess.id +".\n");
+                currentProcess.isRunning = true;
                 currentProcess.currentInstructionCounter++;
                 scheduler--;
-                //Verifica condição de parada
-                if(scheduler == 0 || currentProcess.instructions.length >= currentProcess.currentInstructionCounter) {
-                    currentProcess.finished = true;
+                if(scheduler <= 0){
                     isFree = true;
+                    currentProcess.isRunning = false;
                 }
-                isFree = false;
-            }else{
+                //Verifica se o processo encerrou
+                if (currentProcess.instructions.length <= currentProcess.currentInstructionCounter) {
+                    isFree = true;
+                    currentProcess.isRunning = false;
+                    currentProcess.finished = true;
+                }
+            } else {
                 currentProcess.waitTime = currentInstruction;
+                currentProcess.isRunning = false;
                 isFree = true;
             }
 
