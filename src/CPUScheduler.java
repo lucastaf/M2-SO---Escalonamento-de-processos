@@ -1,8 +1,11 @@
+import lib.Process;
+
 import java.util.List;
 
 public class CPUScheduler {
     CPUCore[] Cores;
-    List<Process> Processes;
+    List<lib.Process> Processes;
+    List<lib.Process> EndedProcesses;
 
 
     void runScheduler(){
@@ -14,7 +17,7 @@ public class CPUScheduler {
         }
     }
 
-    public void includeProcess(Process process){
+    public void includeProcess(lib.Process process){
         this.Processes.add(process);
     }
 
@@ -29,6 +32,7 @@ public class CPUScheduler {
                     process.currentInstructionCounter++;
                     //Se o processo finalizar após a espera, desaloque da lista;
                     if(process.currentInstructionCounter >= process.instructions.length){
+                        EndedProcesses.add(process);
                         Processes.remove(index);
                         index --;
                     }

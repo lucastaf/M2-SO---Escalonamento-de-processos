@@ -1,3 +1,5 @@
+import lib.Process;
+
 public class CPUCore {
     Process currentProcess = null;
     private int scheduler;
