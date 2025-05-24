@@ -12,7 +12,7 @@ public class Process {
 
     public void processWait() {
         if (this.waitTime > 0) {
-            System.out.println("Processo aguardando");
+            System.out.println("Processo aguardando: " + this.id);
             this.waitTime--;
             if (this.waitTime <= 0) {
                 this.currentInstructionCounter++;

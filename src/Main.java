@@ -1,21 +1,38 @@
 import lib.FutureProcess;
 import lib.ProcessParser;
 
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
-        FutureProcess[] Processes = ProcessParser.parseFile("src/lib/processes.txt");
-        FutureProcess newProcess = ProcessParser.parseInstruction("Novo_ID 2 3 sim 2 3");
-        System.out.println(newProcess.process.id);
+        List<FutureProcess> futureProcesses = ProcessParser.parseFile("src/lib/processes.txt");
         CPUCore[] cores = new CPUCore[4];
-        for(int i = 0; i < cores.length; i++){
-            cores[i] = new CPUCore();
+        for (int i = 0; i < cores.length; i++) {
+            cores[i] = new CPUCore(i);
         }
         CPUScheduler Scheduler = new CPUScheduler(cores, 3);
-        Scheduler.includeProcess(newProcess.process);
-        while (!Scheduler.finished) {
-            System.out.println("Iniciando novo ciclo");
-            Scheduler.runScheduler();
+        for (CPUCore Core : cores){
+            Core.setRegisterEvent(Scheduler);
         }
+        while (!Scheduler.finished || !futureProcesses.isEmpty()) {
+            if (!futureProcesses.isEmpty()) {
+                for (int index = 0; index < futureProcesses.size(); index++) {
+                    FutureProcess Process = futureProcesses.get(index);
+                    if (Scheduler.getCounter() >= Process.initTime) {
+                        Scheduler.includeProcess(Process.process);
+                        futureProcesses.remove(index);
+                        index --;
+
+                    }
+                }
+            }
+            System.out.println("Iniciando novo ciclo: " + Scheduler.getCounter());
+            Scheduler.runScheduler();
+            System.out.println();
+        }
+
+        System.out.println(Scheduler.registers);
+        System.out.println("Todos processos rodados");
     }
 
 }

@@ -13,7 +13,7 @@ public final class ProcessParser {
     private ProcessParser() {
     }
 
-    public static FutureProcess[] parseFile(String fileName) {
+    public static List<FutureProcess> parseFile(String fileName) {
         try {
             File FileObj = new File(fileName);
             Scanner fileReader = new Scanner(FileObj);
@@ -23,10 +23,10 @@ public final class ProcessParser {
                 Processes.add(ProcessParser.parseInstruction(line));
                 System.out.println(line);
             }
-            return Processes.toArray(new FutureProcess[0]);
+            return Processes;
         } catch (FileNotFoundException e) {
             System.out.println("Erro ao ler o arquivo");
-            return new FutureProcess[0];
+            return new ArrayList<>();
         }
     }
 
