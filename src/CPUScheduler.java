@@ -1,42 +1,56 @@
 import lib.Process;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CPUScheduler {
     CPUCore[] Cores;
-    List<lib.Process> Processes;
-    List<lib.Process> EndedProcesses;
+    List<lib.Process> Processes = new ArrayList<lib.Process>();
+    List<lib.Process> EndedProcesses = new ArrayList<lib.Process>();
+    public boolean finished = true;
+    private int schedulerTime = 3;
+
+    public CPUScheduler(CPUCore[] Cores) {
+        this.Cores = Cores;
+    }
 
 
-    void runScheduler(){
+    void runScheduler() {
         //Checa por processos em espera
-        checkWaitingProcesses();
+        checkProcesses();
 
-        for(CPUCore CPU : Cores){
+        if(this.Processes.isEmpty()){
+            this.finished = true;
+            return;
+        }
+        for (CPUCore CPU : Cores) {
+            if (CPU.isFree()) {
+                Process process = Processes.getFirst();
+                if (!process.isRunning && process.waitTime == 0 && !process.finished) {
+                    System.out.println("Realocando espaço");
+                    CPU.setProcess(process, schedulerTime);
+                }
+            }
+            CPU.runInstruction();
             //Alocação dos processos
         }
     }
 
-    public void includeProcess(lib.Process process){
+    public void includeProcess(lib.Process process) {
         this.Processes.add(process);
+        finished = false;
     }
 
-    void checkWaitingProcesses(){
-        for (int index = 0; index < Processes.size(); index ++){
+    void checkProcesses() {
+        for (int index = 0; index < Processes.size(); index++) {
             Process process = Processes.get(index);
-            //Se o processo estiver em espera, diminua o tempo de espera
-            if(process.waitTime > 0){
-                process.waitTime--;
-                //Se o tempo de espera acabar, pule para a próxima instrução
-                if(process.waitTime <= 0){
-                    process.currentInstructionCounter++;
-                    //Se o processo finalizar após a espera, desaloque da lista;
-                    if(process.currentInstructionCounter >= process.instructions.length){
-                        EndedProcesses.add(process);
-                        Processes.remove(index);
-                        index --;
-                    }
-                }
+            process.processWait();
+
+            //Se o processo finalizar após a espera, desaloque da lista;
+            if (process.finished) {
+                EndedProcesses.add(process);
+                Processes.remove(index);
+                index--;
             }
         }
     }

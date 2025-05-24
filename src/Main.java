@@ -3,26 +3,16 @@ import lib.ProcessParser;
 
 public class Main {
     public static void main(String[] args) {
-        FutureProcess newProcess = ProcessParser.parseInstruction("Novo_ID 2 10 sim 5 10");
+        FutureProcess newProcess = ProcessParser.parseInstruction("Novo_ID 2 3 sim 2 3");
         System.out.println(newProcess.process.id);
-        CPUCore core = new CPUCore();
-        core.setProcess(newProcess.process, 3);
-        while (true) {
-            core.runInstruction();
-            if (newProcess.process.waitTime > 0) {
-                System.out.println("Processo aguardando");
-                newProcess.process.processWait();
-            } else {
-
-                if (newProcess.process.finished) {
-                    System.out.println("Processo finalizado");
-                    break;
-                }
-                if (core.isFree()) {
-                    System.out.println("Realocando espaço");
-                    core.setProcess(newProcess.process, 3);
-                }
-            }
+        CPUCore[] cores = new CPUCore[4];
+        for(int i = 0; i < cores.length; i++){
+            cores[i] = new CPUCore();
+        }
+        CPUScheduler Scheduler = new CPUScheduler(cores);
+        Scheduler.includeProcess(newProcess.process);
+        while (!Scheduler.finished) {
+            Scheduler.runScheduler();
         }
     }
 

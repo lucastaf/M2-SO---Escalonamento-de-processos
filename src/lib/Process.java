@@ -11,9 +11,15 @@ public class Process {
     public int endTime;
 
     public void processWait() {
-        this.waitTime--;
-        if (this.waitTime <= 0) {
-            this.currentInstructionCounter++;
+        if (this.waitTime > 0) {
+            System.out.println("Processo aguardando");
+            this.waitTime--;
+            if (this.waitTime <= 0) {
+                this.currentInstructionCounter++;
+                if (this.currentInstructionCounter >= this.instructions.length) {
+                    this.finished = true;
+                }
+            }
         }
     }
 
