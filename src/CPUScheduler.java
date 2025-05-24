@@ -8,10 +8,17 @@ public class CPUScheduler {
     List<lib.Process> Processes = new ArrayList<lib.Process>();
     List<lib.Process> EndedProcesses = new ArrayList<lib.Process>();
     public boolean finished = true;
-    private int schedulerTime = 3;
+    private int schedulerTime = 0;
+    private int counter;
 
-    public CPUScheduler(CPUCore[] Cores) {
+
+    public int getCounter(){
+        return this.counter;
+    }
+
+    public CPUScheduler(CPUCore[] Cores, int schedulerTime) {
         this.Cores = Cores;
+        this.schedulerTime = schedulerTime;
     }
 
 
@@ -25,10 +32,11 @@ public class CPUScheduler {
         }
         for (CPUCore CPU : Cores) {
             if (CPU.isFree()) {
-                Process process = Processes.getFirst();
-                if (!process.isRunning && process.waitTime == 0 && !process.finished) {
-                    System.out.println("Realocando espaço");
-                    CPU.setProcess(process, schedulerTime);
+                for(Process process : Processes) {
+                    if (!process.isRunning && process.waitTime == 0 && !process.finished) {
+                        System.out.println("Realocando espaço");
+                        CPU.setProcess(process, schedulerTime);
+                    }
                 }
             }
             CPU.runInstruction();
