@@ -12,7 +12,7 @@ public class CPUCore {
         this.id = id;
     }
 
-    public void setRegisterEvent(OnRegisterEvent registerEvent){
+    public void setRegisterEvent(OnRegisterEvent registerEvent) {
         this.registerEvent = registerEvent;
     }
 
@@ -36,20 +36,22 @@ public class CPUCore {
                 currentProcess.isRunning = true;
                 currentProcess.currentInstructionCounter++;
                 scheduler--;
-                if (scheduler <= 0) {
-                    isFree = true;
-                    currentProcess.isRunning = false;
-                    this.registerEvent.onProcessFree(this.id, currentProcess.id);
-                }
                 //Verifica se o processo encerrou
                 if (currentProcess.instructions.length <= currentProcess.currentInstructionCounter) {
+                    this.registerEvent.onProcessFree(this.id, currentProcess.id, "ended");
                     isFree = true;
                     currentProcess.isRunning = false;
                     currentProcess.finished = true;
-                    this.registerEvent.onProcessFree(this.id, currentProcess.id);
+                    return;
+                }
+                if (scheduler <= 0) {
+                    isFree = true;
+                    currentProcess.isRunning = false;
+                    this.registerEvent.onProcessFree(this.id, currentProcess.id, "scheduler");
                 }
             } else {
                 currentProcess.waitTime = currentInstruction;
+                this.registerEvent.onProcessFree(this.id, currentProcess.id, "IO");
                 currentProcess.isRunning = false;
                 isFree = true;
             }

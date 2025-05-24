@@ -1,6 +1,9 @@
 import lib.FutureProcess;
 import lib.ProcessParser;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class Main {
@@ -31,8 +34,17 @@ public class Main {
             System.out.println();
         }
 
-        System.out.println(Scheduler.registers);
         System.out.println("Todos processos rodados");
+        try{
+
+        File outPutFile = new File("output.txt");
+        FileWriter writer = new FileWriter(outPutFile);
+        writer.write(Scheduler.registers);
+        writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 }

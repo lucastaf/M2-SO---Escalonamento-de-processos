@@ -41,7 +41,7 @@ public class CPUScheduler implements OnRegisterEvent {
                     if (CPU.isFree() && !process.isRunning && process.waitTime == 0 && !process.finished) {
                         System.out.println("CPU " + CPU.id + ": Realocando espaço: " + process.id);
                         CPU.setProcess(process, schedulerTime);
-                        registers += "IN " + CPU.id + " " + process.id + "\n";
+                        registers += "IN " + this.counter + " " + CPU.id + " " + process.id + "\n";
                         break;
                     }
                 }
@@ -72,7 +72,7 @@ public class CPUScheduler implements OnRegisterEvent {
     }
 
     @Override
-    public void onProcessFree(int CoreId, String ProcessesID) {
-        this.registers += "OUT " + CoreId + " " + ProcessesID + "\n";
+    public void onProcessFree(int CoreId, String ProcessesID, String Reason) {
+        this.registers += Reason + " " + this.counter + " " + CoreId + " " + ProcessesID + "\n";
     }
 }
