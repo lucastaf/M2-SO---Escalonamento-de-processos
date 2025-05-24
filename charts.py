@@ -1,5 +1,6 @@
 import plotly.express as px
 import pandas as pd
+import datetime
 
 file = open("output.txt")
 lines = file.readlines()
@@ -20,8 +21,8 @@ for processName in processes:
 
         Task = processName
         CPU = pieces1[2]
-        Start = "2025-01-"+pieces1[1]
-        Finish = "2025-01-"+pieces2[1]
+        Start = datetime.datetime.fromtimestamp(int(pieces1[1]))
+        Finish = datetime.datetime.fromtimestamp(int(pieces2[1]))
         df.append(dict(CPU=CPU, Start=Start, Finish=Finish, Task=Task))
 
 print(df)
