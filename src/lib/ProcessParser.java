@@ -20,6 +20,9 @@ public final class ProcessParser {
             List<FutureProcess> Processes = new ArrayList<FutureProcess>();
             while (fileReader.hasNextLine()){
                 String line = fileReader.nextLine();
+                if(line.startsWith("#") || line.isEmpty()){
+                    continue;
+                }
                 Processes.add(ProcessParser.parseInstruction(line));
                 System.out.println(line);
             }

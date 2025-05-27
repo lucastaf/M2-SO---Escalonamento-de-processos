@@ -2,13 +2,26 @@ package lib;
 
 public class Process {
     public String id;
-    public int[] instructions;
-    public int waitTime = 0;
-    public int currentInstructionCounter = 0;
-    public boolean finished = false;
-    public boolean isRunning = false;
-    public int initTime;
-    public int endTime;
+    private final int[] instructions;
+    private int waitTime = 0;
+    private int currentInstructionCounter = 0;
+
+    public boolean isWaiting(){
+        return waitTime > 0;
+    }
+
+    public void passToNextInstruction(int processorID){
+        System.out.println("CPU " + processorID + ": Rodando processo: " + this.id);
+        if(currentInstructionCounter <= instructions.length - 1){
+            currentInstructionCounter++;
+            if(!this.hasMoreInstruction()){
+                return;
+            }
+            if(this.getCurrentInstruction() > 0 ){
+                this.waitTime = this.getCurrentInstruction();
+            }
+        }
+    }
 
     public void processWait() {
         if (this.waitTime > 0) {
@@ -16,14 +29,15 @@ public class Process {
             this.waitTime--;
             if (this.waitTime <= 0) {
                 this.currentInstructionCounter++;
-                if (this.currentInstructionCounter >= this.instructions.length) {
-                    this.finished = true;
-                }
             }
         }
     }
 
-    public int getCurrentInstruction() {
+    public boolean hasMoreInstruction(){
+        return (this.instructions.length -1 >= this.currentInstructionCounter);
+    }
+
+    private int getCurrentInstruction() {
         return instructions[currentInstructionCounter];
     }
 

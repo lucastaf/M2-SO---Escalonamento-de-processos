@@ -3,8 +3,7 @@ import lib.Process;
 
 public class CPUCore {
     Process currentProcess = null;
-    private int scheduler;
-    private boolean isFree = true;
+    private int quantum;
     public int id = 0;
     private OnRegisterEvent registerEvent;
 
@@ -12,52 +11,54 @@ public class CPUCore {
         this.id = id;
     }
 
+    public boolean isFree() {
+        return currentProcess == null;
+    }
+
     public void setRegisterEvent(OnRegisterEvent registerEvent) {
         this.registerEvent = registerEvent;
     }
 
-    public void setProcess(Process currentProcess, int scheduler) {
-        if (this.isFree) {
-            this.currentProcess = currentProcess;
-            this.scheduler = scheduler;
-            this.isFree = false;
-        }
-    }
+    public void setProcess(Process currentProcess, int quantum) {
 
-    public boolean isFree() {
-        return isFree;
+        this.currentProcess = currentProcess;
+        this.quantum = quantum;
+
     }
 
     void runInstruction() {
-        if (currentProcess != null && !this.isFree) {
-            int currentInstruction = currentProcess.instructions[currentProcess.currentInstructionCounter];
-            if (currentInstruction <= 0) {
-                System.out.println("CPU " + this.id + ": Rodando processo: " + currentProcess.id);
-                currentProcess.isRunning = true;
-                currentProcess.currentInstructionCounter++;
-                scheduler--;
-                //Verifica se o processo encerrou
-                if (currentProcess.instructions.length <= currentProcess.currentInstructionCounter) {
-                    this.registerEvent.onProcessFree(this.id, currentProcess.id, "ended");
-                    isFree = true;
-                    currentProcess.isRunning = false;
-                    currentProcess.finished = true;
-                    return;
-                }
-                if (scheduler <= 0) {
-                    isFree = true;
-                    currentProcess.isRunning = false;
-                    this.registerEvent.onProcessFree(this.id, currentProcess.id, "scheduler");
-                }
-            } else {
-                currentProcess.waitTime = currentInstruction;
-                this.registerEvent.onProcessFree(this.id, currentProcess.id, "IO");
-                currentProcess.isRunning = false;
-                isFree = true;
+        if (currentProcess != null) {
+
+            //Verifica se entrou em estado de espera
+            if(currentProcess.isWaiting()){
+                this.registerEvent.onProcessFree(this.id, currentProcess, "IO");
+                this.currentProcess = null;
+                return;
             }
 
+
+            currentProcess.passToNextInstruction(this.id);
+            quantum--;
+            //Verifica se o processo encerrou
+            if (!currentProcess.hasMoreInstruction()) {
+                this.registerEvent.onProcessFree(this.id, currentProcess, "ended");
+                this.currentProcess = null;
+                return;
+            }
+
+
+
+            //Verifica se o tempo de quantum acabou
+            if (quantum <= 0) {
+                this.registerEvent.onProcessFree(this.id, currentProcess, "scheduler");
+                this.currentProcess = null;
+                return;
+            }
+
+
         }
+
     }
-
-
 }
+
+

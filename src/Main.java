@@ -17,12 +17,12 @@ public class Main {
         for (CPUCore Core : cores){
             Core.setRegisterEvent(Scheduler);
         }
-        while (!Scheduler.finished || !futureProcesses.isEmpty()) {
+        while (!Scheduler.IsSchedulerEnded() || !futureProcesses.isEmpty()) {
             if (!futureProcesses.isEmpty()) {
                 for (int index = 0; index < futureProcesses.size(); index++) {
                     FutureProcess Process = futureProcesses.get(index);
                     if (Scheduler.getCounter() >= Process.initTime) {
-                        Scheduler.includeProcess(Process.process);
+                        Scheduler.includeReadyProcess(Process.process);
                         futureProcesses.remove(index);
                         index --;
 

@@ -23,9 +23,19 @@ for processName in processes:
         CPU = pieces1[2]
         Start = datetime.datetime.fromtimestamp(int(pieces1[1]))
         Finish = datetime.datetime.fromtimestamp(int(pieces2[1]))
-        df.append(dict(CPU=CPU, Start=Start, Finish=Finish, Task=Task))
+        Delta = int(pieces2[1]) - int(pieces1[1])
+        df.append(dict(CPU=CPU, Start=Start, Finish=Finish, Task=Task, ExitType=pieces2[0], Delta=Delta))
+        
+CPUs = sorted(set(d["CPU"] for d in df), key=lambda x: int(x))
+print(CPUs)
 
-print(df)
-
-fig = px.timeline(df, x_start="Start", x_end="Finish", y="CPU", color="Task")
+fig = px.timeline(
+    df,
+    x_start="Start",
+    x_end="Finish",
+    y="CPU",
+    color="Task",
+    category_orders={"CPU": CPUs},
+    hover_data=["ExitType", "Delta"]
+)
 fig.show()
