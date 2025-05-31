@@ -28,6 +28,8 @@ public class CPUCore {
 
     void runInstruction() {
         if (currentProcess != null) {
+            currentProcess.passToNextInstruction(this.id);
+            quantum--;
 
             //Verifica se entrou em estado de espera
             if(currentProcess.isWaiting()){
@@ -35,10 +37,6 @@ public class CPUCore {
                 this.currentProcess = null;
                 return;
             }
-
-
-            currentProcess.passToNextInstruction(this.id);
-            quantum--;
             //Verifica se o processo encerrou
             if (!currentProcess.hasMoreInstruction()) {
                 this.registerEvent.onProcessFree(this.id, currentProcess, "ended");

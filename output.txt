@@ -1,4 +1,0 @@
-IN 0 0 Process_1
-scheduler 2 0 Process_1
-IN 5 1 Process_1
-ended 7 1 Process_1

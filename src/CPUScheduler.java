@@ -11,6 +11,7 @@ public class CPUScheduler implements OnRegisterEvent {
     private final Queue<Process> ReadyProcesses = new LinkedList<>();
     private final List<Process> WaitingProcesses = new LinkedList<>();
     private final List<CPUCore> RunningCores = new LinkedList<>();
+    private final Queue<Process> StandByProcess = new LinkedList<>();
     private int quantumTime = 0;
     private int counter = 0;
     public String registers = "";
@@ -27,10 +28,10 @@ public class CPUScheduler implements OnRegisterEvent {
 
 
     void runScheduler() {
+
         //Checa por processos em espera
         CheckWaitingProcess();
         RunAllCores();
-
         //Alocação dos processos
         while (!ReadyCores.isEmpty() && !ReadyProcesses.isEmpty()) {
             Process nextProcess = ReadyProcesses.poll();
@@ -39,7 +40,6 @@ public class CPUScheduler implements OnRegisterEvent {
             core.setProcess(nextProcess, quantumTime);
             RunningCores.add(core);
             registers += "IN " + this.counter + " " + core.id + " " + nextProcess.id + "\n";
-            core.runInstruction();
         }
 
         counter++;
@@ -88,6 +88,7 @@ public class CPUScheduler implements OnRegisterEvent {
             this.WaitingProcesses.add(process);
         }
         System.out.println("CPU " + CoreId + ": " + "Liberando processo: " + process.id+ ", " + Reason);
+        //O processo de liberação ocorre um counter antes do esperado, o counter + 1 deve resolver
         this.registers += Reason + " " + this.counter + " " + CoreId + " " + process.id + "\n";
     }
 }

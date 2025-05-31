@@ -3,7 +3,8 @@ package lib;
 public class Process {
     public String id;
     private final int[] instructions;
-    private int waitTime = 0;
+    private int waitTime = 0
+            ;
     private int currentInstructionCounter = 0;
 
     public boolean isWaiting(){
